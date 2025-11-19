@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Shubham Sharma — Cyberpunk Holo Portfolio</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-1:#030212;
+    --neon-cyan:#00eaff;
+    --neon-mag:#ff00ea;
+    --panel:#071026;
+    --glass: rgba(255,255,255,0.04);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-1);color:#bfefff;overflow-x:hidden}
+  a{color:inherit}
+  /* top nav */
+  header.top {
+    position:fixed;left:0;right:0;top:18px;z-index:120;
+    display:flex;align-items:center;justify-content:space-between;padding:10px 28px;
+    backdrop-filter: blur(6px) saturate(120%); background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(0,255,255,0.07);box-shadow:0 6px 30px rgba(0,0,0,0.6);
+    border-radius:12px;margin:0 20px;
+  }
+  .brand {display:flex;gap:12px;align-items:center}
+  .logo {
+    width:46px;height:46px;border-radius:10px;
+    background:linear-gradient(120deg,var(--neon-cyan),var(--neon-mag));
+    box-shadow:0 0 18px rgba(0,234,255,0.12),0 6px 24px rgba(255,0,234,0.03);
+    display:flex;align-items:center;justify-content:center;font-weight:700;color:#001;
+    font-family: 'Orbitron', sans-serif;font-size:16px;
+    transform:rotate(-10deg);
+  }
+  .brand h1{font-family: 'Orbitron', sans-serif;font-size:14px;margin:0;color:#e8ffff;letter-spacing:0.6px}
+  nav a {color: #9feaff;text-decoration:none;margin-left:18px;font-weight:600; font-size:14px;opacity:0.95}
+  nav a.active{color:var(--neon-cyan);text-shadow:0 0 10px var(--neon-cyan)}
+  nav a:hover{color:var(--neon-mag);text-shadow:0 0 8px var(--neon-mag)}
+
+  /* canvas background */
+  #bgCanvas {position:fixed;inset:0;z-index:0;display:block}
+
+  /* hero */
+  .wrap {position:relative;min-height:100vh;z-index:2}
+  .hero {
+    padding:140px 6% 80px 6%;text-align:left;
+    display:flex;gap:36px;align-items:flex-start;z-index:2;position:relative;
+  }
+  .hero-left {flex:1;max-width:760px}
+  .role {
+    display:inline-block;padding:6px 12px;border-radius:999px;font-size:13px;
+    background:linear-gradient(90deg, rgba(0,234,255,0.09), rgba(255,0,234,0.06));
+    border:1px solid rgba(0,234,255,0.12);
+    color:#bffcff;margin-bottom:18px;font-weight:600;
+  }
+  .hero h2{font-family:'Orbitron',sans-serif;font-size:46px;margin:6px 0 12px;color:var(--neon-cyan);text-shadow:0 0 18px rgba(0,234,255,0.12)}
+  .hero p.lead{color:#cfeff4;opacity:0.95;font-size:18px;line-height:1.5}
+  .cta {margin-top:20px}
+  .btn {
+    display:inline-block;padding:12px 20px;margin-right:12px;border-radius:10px;font-weight:700;
+    text-decoration:none;border:2px solid rgba(0,234,255,0.12);background:transparent;color:var(--neon-cyan);
+    box-shadow:0 6px 18px rgba(0,234,255,0.04);transition:all .28s ease;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,234,255,0.14);background:rgba(0,234,255,0.04)}
+  .ghost{border-color:transparent;color:#ffd6ff}
+
+  /* holo card */
+  .hero-right {width:380px}
+  .holo {perspective:900px}
+  .card {
+    transform-style:preserve-3d;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+    border:1px solid rgba(0,234,255,0.08);
+    padding:18px;border-radius:14px;backdrop-filter: blur(8px);
+    box-shadow:0 8px 40px rgba(0,0,0,0.6), inset 0 0 120px rgba(0,234,255,0.02);
+    transition:transform .35s ease, box-shadow .35s ease;
+    transform: translateZ(0);
+  }
+  .card:hover{transform: rotateY(-8deg) translateY(-6px) translateZ(10px); box-shadow:0 24px 80px rgba(0,234,255,0.12)}
+  .card .title{font-family:'Orbitron',sans-serif;color:var(--neon-mag);font-size:14px;letter-spacing:1px}
+  .card .name{font-family:'Orbitron',sans-serif;font-size:22px;margin-top:6px;color:#e8ffff}
+  .holo-lines{position:relative;margin-top:12px}
+  .holo-lines::before, .holo-lines::after{
+    content:"";position:absolute;left:-6px;right:-6px;height:1px;background:linear-gradient(90deg,transparent,var(--neon-cyan),transparent);opacity:0.9
+  }
+  .holo-meta{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .chip{padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.03);font-size:13px}
+
+  /* sections */
+  section.panel{padding:60px 6%;position:relative;z-index:2}
+  .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .panel-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+    border-radius:12px;padding:18px;border:1px solid rgba(0,255,255,0.06);box-shadow:0 8px 30px rgba(0,0,0,0.7);
+    transition:transform .28s ease;
+  }
+  .panel-card:hover{transform:translateY(-6px)}
+  h2.section-title{font-family:'Orbitron';font-size:28px;color:var(--neon-mag);margin:0 0 18px}
+
+  /* project tiles */
+  .project-tile{
+    position:relative;padding:18px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,0,234,0.06);
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.12));
+  }
+  .project-tile::before{
+    content:"";position:absolute;inset:0;background:linear-gradient(120deg, rgba(0,234,255,0.03), rgba(255,0,234,0.02));mix-blend-mode:screen;opacity:0.9;pointer-events:none;
+    transform:translateZ(-1px);
+  }
+  .project-title{font-family:'Orbitron';font-size:16px;color:var(--neon-cyan);margin-bottom:8px}
+  .project-desc{font-size:14px;color:#cfeff4;opacity:0.95;line-height:1.45}
+
+  footer {padding:28px 6%;text-align:center;color:#8feff4;opacity:0.9;z-index:2}
+
+  /* overlay scanlines + vignette */
+  .overlay {position:fixed;inset:0;pointer-events:none;z-index:40;background-image:linear-gradient(transparent 0%, rgba(0,0,0,0.15) 100%);}
+  .scan{position:fixed;inset:0;z-index:45;mix-blend-mode:overlay;opacity:0.16;pointer-events:none;background:repeating-linear-gradient(180deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 5px);animation:scanMove 6s linear infinite}
+  @keyframes scanMove{from{transform:translateY(-10%)}to{transform:translateY(10%)}}
+
+  @media (max-width:880px){
+    .hero {flex-direction:column;padding-top:120px}
+    .hero-right{width:100%}
+    nav a{margin-left:10px}
+    .brand h1{display:none}
+  }
+
+  /* ribbons + microbox */
+  .ribbon {position:absolute;left:0;right:0;height:2px;top:40%;background:linear-gradient(90deg, transparent, var(--neon-cyan), transparent);opacity:0.25;filter:blur(6px);transform:skewY(-6deg) translateY(-60px);animation:rib 7s linear infinite}
+  @keyframes rib{0%{transform:translateX(-50%) scaleX(.6)}50%{transform:translateX(50%) scaleX(1.05)}100%{transform:translateX(150%) scaleX(.6)}}
+  .micro {position:absolute;right:8%;top:26%;width:160px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(0,255,255,0.06);backdrop-filter:blur(6px);transform:translateZ(0);z-index:30}
+  .micro .t{font-family:'Orbitron';font-size:13px;color:var(--neon-cyan)}
+</style>
+</head>
+<body>
+
+<!-- FULL LIVE BACKGROUND CANVAS -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- overlays -->
+<div class="overlay"></div>
+<div class="scan"></div>
+
+<div class="wrap">
+  <!-- nav -->
+  <header class="top" role="navigation" aria-label="main nav">
+    <div class="brand">
+      <div class="logo">SS</div>
+      <div>
+        <h1>Shubham Sharma</h1>
+        <div style="font-size:12px;color:#9feaff;margin-top:2px;">Digital Marketing • SEO • ASO • ORM • Meta Ads</div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#home" data-link>Home</a>
+      <a href="#about" data-link>About</a>
+      <a href="#projects" data-link>Projects</a>
+      <a href="#contact" data-link>Contact</a>
+    </nav>
+  </header>
+
+  <!-- main content -->
+  <main>
+    <section id="home" class="hero" style="padding-top:160px">
+      <div class="hero-left">
+        <div class="role">Digital Marketing Specialist • Mohali</div>
+        <h2>Welcome into Shubham’s Futuristic World</h2>
+        <p class="lead">I help brands find new customers through cutting-edge digital advertising, SEO, ASO and online reputation strategies. I blend data-driven tactics with creative cyber interfaces to deliver measurable growth.</p>
+
+        <div class="cta">
+          <a class="btn" href="#projects" data-link>View Projects</a>
+          <a class="btn ghost" href="https://www.fiverr.com/shubham7421" target="_blank">Fiverr</a>
+          <a class="btn" href="https://www.facebook.com/garg7431/" target="_blank">Facebook</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="holo">
+          <div class="card" id="holoCard">
+            <div class="title">Digital Marketing Specialist</div>
+            <div class="name">Shubham Sharma</div>
+
+            <div class="holo-lines">
+              <p style="margin:12px 0 0;color:#bffcff;">Adaired Digital Media — Search Engine Optimization Executive (Oct 2025 - Present)</p>
+              <div class="holo-meta">
+                <div class="chip">SEO</div>
+                <div class="chip">ASO</div>
+                <div class="chip">ORM</div>
+                <div class="chip">Meta Ads</div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;font-size:13px;color:#cfeff4">
+              <strong>Location:</strong> Mohali District, India
+            </div>
+          </div>
+        </div>
+
+        <div class="micro" style="top:230px;right:-10px">
+          <div class="t">Live KPI</div>
+          <div style="font-size:13px;color:#cfeff4;margin-top:8px">Impressions<span style="float:right;color:var(--neon-cyan)">1.2M</span></div>
+          <div style="font-size:13px;color:#cfeff4;margin-top:6px">CTR<span style="float:right;color:var(--neon-mag)">4.2%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- about -->
+    <section id="about" class="panel">
+      <h2 class="section-title">ABOUT</h2>
+      <div class="grid">
+        <div class="panel-card">
+          <h3 style="margin-top:2px">Profile</h3>
+          <p style="color:#cfeff4">Helping clients reach new customers through digital advertising. Experienced in SEO, ORM, ASO and Meta Ads. Worked across Adaired Digital Media, J&T Web Solutions, eWeb A1Professionals and more.</p>
+        </div>
+
+        <div class="panel-card">
+          <h3>Experience</h3>
+          <ul style="margin:12px 0 0 18px;color:#cfeff4;line-height:1.6">
+            <li><strong>Adaired Digital Media</strong> — Search Engine Optimization Executive (Oct 2025 – Present) — On-site</li>
+            <li><strong>J&T Web Solutions Pvt Ltd</strong> — Search Engine Optimization Executive (Jun 2023 – Jul 2025) — On-site</li>
+            <li><strong>eWeb A1Professionals Pvt Ltd</strong> — Search Engine Optimization Executive (Mar 2022 – May 2023)</li>
+            <li><strong>Oceana Tech</strong> — Java Programmer (Internship, Jan 2020 – Feb 2020)</li>
+          </ul>
+        </div>
+
+        <div class="panel-card">
+          <h3>Education</h3>
+          <p style="color:#cfeff4"><strong>Himachal Pradesh University</strong><br>BCA (Computer Science), 2017–2020 — specialization: Digital Marketing</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- projects (sectioned) -->
+    <section id="projects" class="panel">
+      <h2 class="section-title">PROJECTS</h2>
+
+      <h3 style="color:var(--neon-cyan);font-family:Orbitron;margin-bottom:12px">SEO Projects</h3>
+      <div class="grid" style="margin-bottom:18px">
+        <div class="project-tile">
+          <div class="project-title">ATXAnxiety.com</div>
+          <div class="project-desc">Complete SEO optimization including on-page, off-page, technical improvements & ranking growth.</div>
+        </div>
+        <div class="project-tile">
+          <div class="project-title">LucinaEggDonor.com</div>
+          <div class="project-desc">Long-term SEO strategy to improve organic traffic, keyword visibility & authority building.</div>
+        </div>
+      </div>
+
+      <h3 style="color:var(--neon-mag);font-family:Orbitron;margin:40px 0 12px">ORM Projects</h3>
+      <div class="grid" style="margin-bottom:18px">
+        <div class="project-tile"><div class="project-title">Jake Seal</div><div class="project-desc">Complete reputation monitoring, review management & brand repair.</div></div>
+        <div class="project-tile"><div class="project-title">Eric Albuja</div><div class="project-desc">Search cleanup, reputation improvement, and positive visibility boost.</div></div>
+        <div class="project-tile"><div class="project-title">Corey Smith</div><div class="project-desc">ORM strategy for online profile strengthening & negative suppression.</div></div>
+        <div class="project-tile"><div class="project-title">Matthew Danchak</div><div class="project-desc">Complete ORM cycle with authority building & SERP stabilization.</div></div>
+      </div>
+
+      <h3 style="color:#ffbaff;font-family:Orbitron;margin:40px 0 12px">SMO Projects</h3>
+      <div class="grid">
+        <div class="project-tile"><div class="project-title">MPSM Marketing</div><div class="project-desc">Social media growth, brand content strategy & engagement boost.</div></div>
+        <div class="project-tile"><div class="project-title">Janj New Jersey</div><div class="project-desc">Community-oriented SMO campaign, targeted reach & local branding.</div></div>
+        <div class="project-tile"><div class="project-title">Tazzo Ai</div><div class="project-desc">Tech-based brand SMO & audience-building.</div></div>
+      </div>
+    </section>
+
+    <!-- contact -->
+    <section id="contact" class="panel" style="padding-bottom:120px">
+      <h2 class="section-title">CONTACT</h2>
+      <div class="grid">
+
+        <div class="panel-card">
+          <h3>Get in touch</h3>
+          <p style="color:#cfeff4">Want to collaborate? Feel free to reach out using my social links below.</p>
+
+          <p style="margin-top:16px">
+            <a class="btn" href="https://www.fiverr.com/shubham7421" target="_blank">Fiverr</a>
+            <a class="btn ghost" href="mailto:shubham.marketing.expert@gmail.com">Email</a>
+            <a class="btn" href="https://www.facebook.com/garg7431/" target="_blank">Facebook</a>
+            <a class="btn" href="https://www.linkedin.com/in/shubham7431/" target="_blank">LinkedIn</a>
+          </p>
+        </div>
+
+        <div class="panel-card">
+          <h3>Recommendation</h3>
+          <p style="color:#cfeff4"><em>"I've had the pleasure of leading Shubham... His expertise in SEO, ORM, and SMO is outstanding."</em><br><strong>- Sachin Sharma (July 31, 2024)</strong></p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    © <strong>Shubham Sharma</strong> — Digital Marketing Specialist • Mohali District • Built with neon & code
+  </footer>
+</div>
+
+<!-- floating ribbons -->
+<div class="ribbon" style="top:28%"></div>
+<div class="ribbon" style="top:52%;animation-delay:1.4s"></div>
+
+<!-- SCRIPTS: Canvas background, holo tilt, routing, kpi -->
+<script>
+/* ---------------- Canvas: Multi-layer Futuristic Background ---------------- */
+(() => {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W = canvas.width = innerWidth;
+  let H = canvas.height = innerHeight;
+  const DPR = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width = W * DPR; canvas.height = H * DPR; canvas.style.width = W + "px"; canvas.style.height = H + "px";
+  ctx.scale(DPR, DPR);
+
+  // scene objects
+  const particles = [];
+  const hexes = [];
+  const rings = [];
+  const GRID_SPACING = 90;
+
+  // init counts
+  const PT_COUNT = Math.max(60, Math.floor(W * H / 60000));
+  const HEX_COUNT = Math.max(12, Math.floor(W/160));
+  const RING_COUNT = 3;
+
+  // helper random
+  const rand = (a,b) => a + Math.random()*(b-a);
+
+  // create particles (deep-space jumping particles)
+  for(let i=0;i<PT_COUNT;i++){
+    particles.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      z: Math.random()*1.8, // depth
+      r: 0.6 + Math.random()*2.6,
+      hue: Math.random()*360,
+      vx: (Math.random()-0.5)*0.6,
+      vy: -0.2 - Math.random()*0.8,
+      life: Math.random()*3000
+    });
+  }
+
+  // hexagons (floating neon hexagons)
+  for(let i=0;i<HEX_COUNT;i++){
+    hexes.push({
+      x: Math.random()*W,
+      y: Math.random()*H*0.9,
+      size: 40 + Math.random()*120,
+      rot: Math.random()*Math.PI*2,
+      speed: (Math.random()-0.5)*0.004,
+      hue: (200 + Math.random()*120) % 360,
+      depth: 0.2 + Math.random()*1.2
+    });
+  }
+
+  // dimension rings
+  for(let i=0;i<RING_COUNT;i++){
+    rings.push({
+      x: W*(0.2 + i*0.3),
+      y: H*(0.35 + (i%2)*0.12),
+      radius: 120 + i*80,
+      rot: 0,
+      speed: 0.001 + i*0.0008,
+      hueA: (260 + i*40) % 360,
+      hueB: (180 + i*30) % 360
+    });
+  }
+
+  // glitch noise canvas for distortion
+  function glitchPattern(t){
+    // slight time-based offset
+    const g = Math.sin(t*0.0008) * 0.6;
+    return g;
+  }
+
+  function drawHologramGrid(t){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const grad = ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0, 'rgba(10,0,30,0.05)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.05)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.lineWidth = 1;
+    // animated offset
+    const offset = (t*0.02) % GRID_SPACING;
+    ctx.strokeStyle = 'rgba(0,234,255,0.06)';
+    for(let x = -GRID_SPACING; x < W+GRID_SPACING; x += GRID_SPACING){
+      ctx.beginPath();
+      ctx.moveTo(x+offset, 0);
+      ctx.lineTo(x+offset, H);
+      ctx.stroke();
+    }
+    for(let y = -GRID_SPACING; y < H+GRID_SPACING; y += GRID_SPACING){
+      ctx.beginPath();
+      ctx.moveTo(0, y+offset*0.6);
+      ctx.lineTo(W, y+offset*0.6);
+      ctx.stroke();
+    }
+
+    // hologram finer lines
+    ctx.lineWidth = 0.6;
+    ctx.strokeStyle = 'rgba(255,0,234,0.03)';
+    for(let x=-GRID_SPACING*2;x<W+GRID_SPACING*2;x+=GRID_SPACING/2){
+      ctx.beginPath();
+      ctx.moveTo(x+offset*0.45, 0);
+      ctx.lineTo(x+offset*0.45, H);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawRings(t){
+    for(let r of rings){
+      r.rot += r.speed * (1 + Math.sin(t*0.0006)*0.8);
+      const steps = 64;
+      for(let i=0;i<3;i++){
+        ctx.beginPath();
+        const alpha = 0.06 + i*0.03;
+        ctx.strokeStyle = `hsla(${r.hueA},90%,60%,${alpha})`;
+        ctx.lineWidth = 2 + i*1.2;
+        ctx.save();
+        ctx.translate(r.x, r.y);
+        ctx.rotate(r.rot + i*0.45);
+        ctx.arc(0,0, r.radius + i*18, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.restore();
+      }
+      // inner glow
+      ctx.beginPath();
+      const g = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, r.radius*1.6);
+      g.addColorStop(0, `rgba(0,234,255,0.06)`);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(r.x - r.radius*1.6, r.y - r.radius*1.6, r.radius*3.2, r.radius*3.2);
+    }
+  }
+
+  function drawHexes(t){
+    for(let h of hexes){
+      // float motion
+      h.y += Math.sin(t*0.0003 + h.x*0.0006)*0.2 * (1/h.depth);
+      h.x += Math.cos(t*0.0002 + h.y*0.0004)*0.12 * (1/h.depth);
+      h.rot += h.speed * (1 + Math.sin(t*0.0007)*0.6);
+
+      // perspective scale
+      const scale = 0.6 + (1 / (1 + h.depth));
+      const sx = h.x, sy = h.y;
+      const s = h.size * scale;
+      // stroke
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(h.rot);
+      // glow polygon
+      ctx.beginPath();
+      const sides = 6;
+      for(let i=0;i<sides;i++){
+        const ang = (Math.PI*2/sides)*i;
+        const px = Math.cos(ang) * s;
+        const py = Math.sin(ang) * s;
+        if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+      }
+      ctx.closePath();
+      ctx.lineWidth = 2;
+      // multi color stroke
+      ctx.strokeStyle = `hsla(${h.hue},90%,60%,0.16)`;
+      ctx.stroke();
+      // inner glow
+      ctx.fillStyle = `rgba(255,255,255,0.01)`;
+      ctx.fill();
+      ctx.restore();
+
+      // tiny accent glows
+      ctx.beginPath();
+      ctx.fillStyle = `hsla(${h.hue},90%,60%,0.06)`;
+      ctx.arc(sx + Math.sin(t*0.001 + h.x*0.001)*6, sy + Math.cos(t*0.001 + h.y*0.001)*6, Math.max(2, s*0.06), 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  function drawParticles(t){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for(let p of particles){
+      // parallax depth effect - particles with larger z appear closer and faster
+      p.x += p.vx * (1 + p.z);
+      p.y += p.vy * (1 + p.z*0.4) + Math.sin(t*0.0006 + p.x*0.001)*0.3;
+      p.life -= 0.6;
+      if(p.y < -40) { p.y = H + 20; p.x = Math.random()*W; p.life = 2000; }
+      if(p.x < -20) p.x = W + 20;
+      if(p.x > W + 20) p.x = -20;
+
+      const alpha = Math.max(0.08, 0.7 * (p.z/2 + 0.2));
+      ctx.beginPath();
+      ctx.fillStyle = `hsla(${p.hue},80%,60%,${alpha})`;
+      ctx.shadowBlur = 10 + p.z*12;
+      ctx.shadowColor = `hsla(${p.hue},80%,60%,${alpha})`;
+      ctx.arc(p.x, p.y, p.r * (1 + p.z*1.2), 0, Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    ctx.restore();
+  }
+
+  // glitch distortion bands
+  function drawGlitch(t){
+    const bands = 4;
+    for(let i=0;i<bands;i++){
+      const hBand = 12 + i*8;
+      const y = (t*0.03 + i*340) % H;
+      const amp = 8 + Math.sin(t*0.001 + i)*10;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      for(let x=0;x<=W;x+=20){
+        ctx.lineTo(x, y + Math.sin((x*0.02) + t*0.001 + i) * amp);
+      }
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = `rgba(255,0,234,0.02)`;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // subtle vignette
+  function drawVignette(){
+    const grd = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.2, W/2, H/2, Math.max(W,H));
+    grd.addColorStop(0, 'rgba(0,0,0,0)');
+    grd.addColorStop(1, 'rgba(0,0,0,0.45)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // main render
+  let last = performance.now();
+  function render(now){
+    const t = now;
+    // clear base with subtle color
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(5,0,20,0.55)';
+    ctx.fillRect(0,0,W,H);
+
+    // layers
+    drawHologramGrid(t);
+    drawRings(t);
+    drawHexes(t);
+    drawParticles(t);
+    drawGlitch(t);
+    drawVignette();
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+
+  // handle resize
+  window.addEventListener('resize', ()=>{
+    W = canvas.width = innerWidth; H = canvas.height = innerHeight;
+    canvas.width = W * DPR; canvas.height = H * DPR;
+    canvas.style.width = W + "px"; canvas.style.height = H + "px";
+    ctx.scale(DPR, DPR);
+  });
+})();
+
+/* ---------------- Holo tilt for card ---------------- */
+(function(){
+  const card = document.getElementById('holoCard');
+  if(!card) return;
+  function onMove(e){
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = (e.clientX - cx);
+    const dy = (e.clientY - cy);
+    const rx = (dy / rect.height) * -12;
+    const ry = (dx / rect.width) * 12;
+    card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(10px)`;
+    card.style.boxShadow = `0 30px 80px rgba(0,234,255,0.08)`;
+  }
+  function onLeave(){
+    card.style.transform = '';
+    card.style.boxShadow = '';
+  }
+  card.addEventListener('mousemove', onMove);
+  card.addEventListener('mouseleave', onLeave);
+})();
+
+/* ---------------- Hash routing + nav active ---------------- */
+(function(){
+  const links = document.querySelectorAll('a[data-link]');
+  function gotoHash(hash){
+    if(!hash || hash === '#') hash = '#home';
+    const el = document.querySelector(hash);
+    if(el){
+      const offset = el.offsetTop - 80;
+      window.scrollTo({top: offset, behavior: 'smooth'});
+    }
+    links.forEach(a=> a.classList.toggle('active', a.getAttribute('href')===hash));
+  }
+  window.addEventListener('hashchange', ()=> gotoHash(location.hash));
+  links.forEach(a=>{
+    a.addEventListener('click', (e)=> {
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        e.preventDefault();
+        location.hash = href;
+      }
+    });
+  });
+  setTimeout(()=> gotoHash(location.hash || '#home'), 200);
+})();
+
+/* ---------------- Live KPI micro update ---------------- */
+(function(){
+  const micro = document.querySelector('.micro');
+  if(!micro) return;
+  let impressions = 1200000;
+  function tick(){
+    impressions += Math.floor(Math.random()*1200 - 200);
+    const ctr = (3.6 + Math.random()*1.6).toFixed(2);
+    micro.innerHTML = `<div class="t">Live KPI</div>
+      <div style="font-size:13px;color:#cfeff4;margin-top:8px">Impressions<span style="float:right;color:var(--neon-cyan)">${(impressions/1000).toFixed(0)}k</span></div>
+      <div style="font-size:13px;color:#cfeff4;margin-top:6px">CTR<span style="float:right;color:var(--neon-mag)">${ctr}%</span></div>`;
+    setTimeout(tick, 2000 + Math.random()*2800);
+  }
+  tick();
+})();
+</script>
+</body>
+</html>
